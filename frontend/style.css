@@ -349,3 +349,96 @@ input, textarea {
         font-size: 16px;
     }
 }
+
+/* =============================
+   STONE COLUMNS
+============================= */
+.stone-column {
+    position: fixed;
+    top: 0;
+    width: 80px;
+    height: 100%;
+    background: url("https://images.unsplash.com/photo-1612197521748-73fa0f9f09da") center/cover no-repeat;
+    z-index: 900;
+}
+
+.left-column { left: 0; }
+.right-column { right: 0; }
+
+/* =============================
+   MYTHIC GRID & NFT RARITY
+============================= */
+.mythic-grid .nft-card {
+    border-width: 3px;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(45deg, #d4af37, #ffd700, #ffb347);
+    position: relative;
+    overflow: hidden;
+}
+
+.nft-card.common { border-color: #c0c0c0; }
+.nft-card.epic { border-color: #9932cc; box-shadow: 0 0 15px rgba(153,50,204,0.6); }
+.nft-card.legendary { border-color: #ffd700; box-shadow: 0 0 25px rgba(255,215,0,0.8); }
+
+/* =============================
+   ACTIVE TAB GOLD SHINE
+============================= */
+button.active {
+    background: linear-gradient(90deg, #ffd700, #e6c200, #ffd700);
+    animation: gold-shine 2s infinite linear;
+    color: #1a0f02;
+}
+
+@keyframes gold-shine {
+    0% { background-position: 0% }
+    100% { background-position: 200% }
+}
+
+/* =============================
+   ETH PRICE BADGE
+============================= */
+.nft-card .price-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.7);
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 3px 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.nft-card .price-badge img {
+    width: 12px;
+    height: 12px;
+}
+
+/* =============================
+   MYTHICAL BACKGROUND FLOATERS
+============================= */
+@keyframes floatY {
+    0% { transform: translateY(0px) }
+    50% { transform: translateY(-20px) }
+    100% { transform: translateY(0px) }
+}
+
+.floater {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-size: cover;
+    animation: floatY 4s ease-in-out infinite;
+    z-index: 100;
+    pointer-events: none;
+}
+
+/* =============================
+   MOBILE STONE COLUMNS
+============================= */
+@media (max-width: 768px) {
+    .stone-column { display: none; }
+}

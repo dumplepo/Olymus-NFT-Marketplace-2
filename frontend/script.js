@@ -168,29 +168,55 @@ async function sendNFT(tokenId, image){
 }
 async function cancelSale(tokenId){ await (await contract.cancelSale(tokenId)).wait(); await displayMyNFTs(); await displayCollections(); }
 
-/* NFT Cards */
-async function createNFTCard(nft,section){
-    const card=document.createElement("div"); card.className="nft-card";
-    const meta=await loadMetadata(nft.tokenId); const isOwner=nft.owner.toLowerCase()===userAddress.toLowerCase();
-    card.onclick=()=>openDetailModal(nft,meta);
-    function stop(e){e.stopPropagation();}
-    if(section==="myNFTs"){
-        card.innerHTML=`<img src="${meta?.image||''}"><h3>${meta?.name||'Unnamed NFT'}</h3>
-        <p><strong>Token ID:</strong>${nft.tokenId}</p>
-        <p><strong>Price:</strong>${nft.forSale?`${ethers.formatEther(nft.price)} ETH`:"Not for sale"}</p>`;
-        if(!nft.forSale) addBtn(card,"Sell",(e)=>{stop(e);sellNFT(nft.tokenId,meta?.image);});
-        else addBtn(card,"Cancel",(e)=>{stop(e);cancelSale(nft.tokenId);});
-        addBtn(card,"Send",(e)=>{stop(e);sendNFT(nft.tokenId,meta?.image);});
-    } else if(section==="collections"){
-        card.innerHTML=`<img src="${meta?.image||''}"><h3>${meta?.name||'Unnamed NFT'}</h3>
-        <p><strong>Token ID:</strong>${nft.tokenId}</p>
-        
-        <p><strong>Price:</strong>${nft.forSale?`${ethers.formatEther(nft.price)} ETH`:"Not for sale"}</p>`;
-        if(isOwner && nft.forSale) addBtn(card,"Cancel",(e)=>{stop(e);cancelSale(nft.tokenId);});
-        else if(!isOwner && nft.forSale) addBtn(card,"Buy",(e)=>{stop(e);buyNFT(nft.tokenId,nft.price,meta?.image);});
+/* =============================
+   NFT CARD UPGRADES
+============================= */
+async function createNFTCard(nft, section){
+    const card = document.createElement("div");
+    card.className = "nft-card";
+
+    const meta = await loadMetadata(nft.tokenId);
+    const isOwner = nft.owner.toLowerCase() === userAddress.toLowerCase();
+
+    // Determine rarity
+    let rarity = "common";
+    if(meta?.rarity) rarity = meta.rarity.toLowerCase();
+    card.classList.add(rarity);
+
+    // Price badge
+    if(nft.forSale) {
+        const badge = document.createElement("div");
+        badge.className = "price-badge";
+        badge.innerHTML = `<img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" /> ${ethers.formatEther(nft.price)} ETH`;
+        card.appendChild(badge);
     }
+
+    card.innerHTML += `<img src="${meta?.image||''}"><h3>${meta?.name||'Unnamed NFT'}</h3>
+        <p><strong>Token ID:</strong> ${nft.tokenId}</p>
+        <p><strong>Price:</strong> ${nft.forSale ? `${ethers.formatEther(nft.price)} ETH` : "Not for sale"}</p>`;
+
+    function stop(e){ e.stopPropagation(); }
+    if(section==="myNFTs") {
+        if(!nft.forSale) addBtn(card,"Sell",(e)=>{stop(e); sellNFT(nft.tokenId, meta?.image);});
+        else addBtn(card,"Cancel",(e)=>{stop(e); cancelSale(nft.tokenId);});
+        addBtn(card,"Send",(e)=>{stop(e); sendNFT(nft.tokenId, meta?.image);});
+    } else if(section==="collections") {
+        if(isOwner && nft.forSale) addBtn(card,"Cancel",(e)=>{stop(e); cancelSale(nft.tokenId);});
+        else if(!isOwner && nft.forSale) addBtn(card,"Buy",(e)=>{stop(e); buyNFT(nft.tokenId, nft.price, meta?.image);});
+    }
+
+    // Floating mythical symbols
+    const floater = document.createElement("div");
+    floater.className = "floater";
+    floater.style.backgroundImage = 'url("https://images.unsplash.com/photo-1612197521748-73fa0f9f09da")';
+    floater.style.left = Math.random() * 170 + "px";
+    floater.style.animationDuration = 3 + Math.random() * 3 + "s";
+    card.appendChild(floater);
+
+    card.onclick = ()=> openDetailModal(nft, meta);
     return card;
 }
+
 
 /* Display */
 async function displayMyNFTs() {
