@@ -13,33 +13,51 @@ const CONTRACT_ABI = [
     "function buyNFT(uint256 tokenId) external payable",
     "function sendNFT(uint256 tokenId, address to) external",
     "function cancelSale(uint256 tokenId) external",
+    "function ownerOf(uint256 tokenId) view returns (address)",
+    "function tokenURI(uint256 tokenId) view returns (string)",
     "function getMyNFTs(address user) external view returns (tuple(uint256 tokenId,address creator,address owner,uint256 price,bool forSale,uint256 createdAt)[])",
     "function getCollections() external view returns (tuple(uint256 tokenId,address creator,address owner,uint256 price,bool forSale,uint256 createdAt)[])"
 ];
 
 /* =============================
-   MINT MODAL ELEMENTS
+   PINATA JWT
+============================= */
+const PINATA_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmMDczMGExNy03NTQyLTQ3ZDUtOTcyNi1lOTVkOWI5ZjBkZTAiLCJlbWFpbCI6ImR1bXBsZS5wb0BnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiZTRiNDdmN2E0NTk2NWVmYzJkZWYiLCJzY29wZWRLZXlTZWNyZXQiOiJlOGRhZjgyYTkwYmZhMzlkNzUxYWQyZTg4YmY3ZTFhOGQxMjU2MDg4M2FmOTgzYTNmYzkxYWJmZGQyZTUwNWU1IiwiZXhwIjoxNzk5OTIxMzgxfQ.2UScG7_nIMQih8Hs5klcXsoTKHX99RvpUJd8ya4uj2k";
+
+/* =============================
+   ELEMENTS
 ============================= */
 const mintModal = document.getElementById("mintModal");
 const openMintBtn = document.getElementById("mintNFT");
-const closeMintBtn = document.getElementById("closeMintModal");
 const confirmMintBtn = document.getElementById("confirmMint");
 
-const imageInput = document.getElementById("mintImage");
-const nameInput = document.getElementById("mintName");
-const descInput = document.getElementById("mintDescription");
-const preview = document.getElementById("mintPreview");
+const imageInput = document.getElementById("nftImage");
+const nameInput = document.getElementById("nftName");
+const descInput = document.getElementById("nftDescription");
+const preview = document.getElementById("imagePreview");
 
-/* =============================
-   PINATA (IPFS)
-============================= */
-const PINATA_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmMDczMGExNy03NTQyLTQ3ZDUtOTcyNi1lOTVkOWI5ZjBkZTAiLCJlbWFpbCI6ImR1bXBsZS5wb0BnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiZTRiNDdmN2E0NTk2NWVmYzJkZWYiLCJzY29wZWRLZXlTZWNyZXQiOiJlOGRhZjgyYTkwYmZhMzlkNzUxYWQyZTg4YmY3ZTFhOGQxMjU2MDg4M2FmOTgzYTNmYzkxYWJmZGQyZTUwNWU1IiwiZXhwIjoxNzk5OTIxMzgxfQ.2UScG7_nIMQih8Hs5klcXsoTKHX99RvpUJd8ya4uj2k";
+//   detailed NFT modal
+const detailModal = document.getElementById("detailModal");
+
+const detailImage = document.getElementById("detailImage");
+const detailName = document.getElementById("detailName");
+const detailDescription = document.getElementById("detailDescription");
+const detailTokenId = document.getElementById("detailTokenId");
+const detailPrice = document.getElementById("detailPrice");
+const detailCreator = document.getElementById("detailCreator");
+const detailOwner = document.getElementById("detailOwner");
+const detailDate = document.getElementById("detailDate");
+
+
+
+
 
 /* =============================
    INIT
 ============================= */
 window.onload = () => {
     document.getElementById("connectWallet").onclick = connectWallet;
+    openMintBtn.onclick = openMintModal;
 };
 
 /* =============================
@@ -63,10 +81,15 @@ async function connectWallet() {
 }
 
 /* =============================
-   MINT MODAL LOGIC
+   MODAL
 ============================= */
-openMintBtn.onclick = () => mintModal.style.display = "block";
-closeMintBtn.onclick = () => mintModal.style.display = "none";
+function openMintModal() {
+    mintModal.style.display = "block";
+}
+
+function closeMintModal() {
+    mintModal.style.display = "none";
+}
 
 imageInput.onchange = () => {
     const file = imageInput.files[0];
@@ -76,11 +99,11 @@ imageInput.onchange = () => {
 };
 
 /* =============================
-   IPFS UPLOAD
+   IPFS
 ============================= */
-async function uploadToIPFS(file) {
+async function uploadToIPFS(fileOrBlob) {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", fileOrBlob);
 
     const res = await fetch(
         "https://api.pinata.cloud/pinning/pinFileToIPFS",
@@ -94,7 +117,7 @@ async function uploadToIPFS(file) {
     );
 
     const data = await res.json();
-    return `ipfs://${data.IpfsHash}`;
+    return `https://gateway.pinata.cloud/ipfs/${data.IpfsHash}`;
 }
 
 /* =============================
@@ -111,27 +134,29 @@ confirmMintBtn.onclick = async () => {
             return;
         }
 
-        const imageURI = await uploadToIPFS(file);
+        // Upload image
+        const imageURL = await uploadToIPFS(file);
 
+        // Metadata
         const metadata = {
             name,
             description,
-            image: imageURI
+            image: imageURL
         };
 
-        const blob = new Blob(
+        const metadataBlob = new Blob(
             [JSON.stringify(metadata)],
             { type: "application/json" }
         );
 
-        const metadataURI = await uploadToIPFS(blob);
+        const tokenURI = await uploadToIPFS(metadataBlob);
 
-        const tx = await contract.mintNFT(metadataURI);
+        const tx = await contract.mintNFT(tokenURI);
         await tx.wait();
 
         alert("NFT Minted!");
 
-        mintModal.style.display = "none";
+        closeMintModal();
         imageInput.value = "";
         nameInput.value = "";
         descInput.value = "";
@@ -152,12 +177,7 @@ confirmMintBtn.onclick = async () => {
 async function sellNFT(tokenId) {
     const price = prompt("Enter price in ETH:");
     if (!price) return;
-
-    await (await contract.sellNFT(
-        tokenId,
-        ethers.parseEther(price)
-    )).wait();
-
+    await (await contract.sellNFT(tokenId, ethers.parseEther(price))).wait();
     await displayMyNFTs();
     await displayCollections();
 }
@@ -177,50 +197,78 @@ async function buyNFT(tokenId, price) {
 async function sendNFT(tokenId) {
     const to = prompt("Recipient address:");
     if (!to) return;
-
     await (await contract.sendNFT(tokenId, to)).wait();
     await displayMyNFTs();
     await displayCollections();
 }
 
 /* =============================
-   NFT CARD
+   CARD
 ============================= */
-function createNFTCard(nft, isOwnerView) {
+async function createNFTCard(nft, isOwnerView = false) {
     const card = document.createElement("div");
     card.className = "nft-card";
 
+    const meta = await loadMetadata(nft.tokenId);
     const isOwner = nft.owner.toLowerCase() === userAddress.toLowerCase();
 
+    // CARD CLICK → DETAIL MODAL
+    card.onclick = () => openDetailModal(nft, meta);
+
     card.innerHTML = `
-        <p><strong>ID:</strong> ${nft.tokenId}</p>
-        <p><strong>Status:</strong>
-            ${nft.forSale
+        <img src="${meta?.image || ''}">
+        <h3>${meta?.name || 'Unnamed NFT'}</h3>
+        <p>${meta?.description || ''}</p>
+        <p>Status: ${
+            nft.forSale
                 ? `For Sale (${ethers.formatEther(nft.price)} ETH)`
-                : "Not for sale"}
-        </p>
+                : "Not for sale"
+        }</p>
     `;
+
+    // BUTTONS MUST NOT TRIGGER MODAL
+    function stop(e) {
+        e.stopPropagation();
+    }
 
     if (isOwnerView) {
         if (!nft.forSale) {
-            addButton(card, "Sell", () => sellNFT(nft.tokenId));
+            addBtn(card, "Sell", (e) => {
+                stop(e);
+                sellNFT(nft.tokenId);
+            });
+        } else {
+            addBtn(card, "Cancel", (e) => {
+                stop(e);
+                cancelSale(nft.tokenId);
+            });
         }
-        addButton(card, "Send", () => sendNFT(nft.tokenId));
+
+        addBtn(card, "Send", (e) => {
+            stop(e);
+            sendNFT(nft.tokenId);
+        });
     } else if (nft.forSale) {
         if (isOwner) {
-            addButton(card, "Cancel", () => cancelSale(nft.tokenId));
+            addBtn(card, "Cancel", (e) => {
+                stop(e);
+                cancelSale(nft.tokenId);
+            });
         } else {
-            addButton(card, "Buy", () => buyNFT(nft.tokenId, nft.price));
+            addBtn(card, "Buy", (e) => {
+                stop(e);
+                buyNFT(nft.tokenId, nft.price);
+            });
         }
     }
 
     return card;
 }
 
-function addButton(card, text, action) {
+function addBtn(card, text, fn) {
     const btn = document.createElement("button");
     btn.innerText = text;
-    btn.onclick = action;
+    btn.onclick = fn;
     card.appendChild(btn);
 }
 
@@ -232,17 +280,16 @@ async function displayMyNFTs() {
     container.innerHTML = "";
 
     const nfts = await contract.getMyNFTs(userAddress);
-
     const visible = nfts.filter(n => !n.forSale);
 
-    if (visible.length === 0) {
-        container.innerHTML = "<p>No NFTs (listed NFTs are in Collections)</p>";
+    if (!visible.length) {
+        container.innerHTML = "<p>No NFTs</p>";
         return;
     }
 
-    visible.forEach(nft =>
-        container.appendChild(createNFTCard(nft, true))
-    );
+    for (const nft of visible) {
+        container.appendChild(await createNFTCard(nft, true));
+    }
 }
 
 async function displayCollections() {
@@ -250,7 +297,38 @@ async function displayCollections() {
     container.innerHTML = "";
 
     const nfts = await contract.getCollections();
-    nfts.forEach(nft =>
-        container.appendChild(createNFTCard(nft, false))
-    );
+    for (const nft of nfts) {
+        container.appendChild(await createNFTCard(nft, false));
+    }
+}
+
+async function loadMetadata(tokenId) {
+    try {
+        const uri = await contract.tokenURI(tokenId);
+        const res = await fetch(uri);
+        return await res.json();
+    } catch {
+        return null;
+    }
+}
+
+function openDetailModal(nft, meta) {
+    detailImage.src = meta?.image || "";
+    detailName.innerText = meta?.name || "Unnamed NFT";
+    detailDescription.innerText = meta?.description || "";
+    detailTokenId.innerText = nft.tokenId;
+    detailPrice.innerText = nft.forSale
+        ? `${ethers.formatEther(nft.price)} ETH`
+        : "Not for sale";
+    detailCreator.innerText = nft.creator;
+    detailOwner.innerText = nft.owner;
+    detailDate.innerText = new Date(
+        Number(nft.createdAt) * 1000
+    ).toLocaleString();
+
+    detailModal.style.display = "block";
+}
+
+function closeDetailModal() {
+    detailModal.style.display = "none";
 }

@@ -96,3 +96,11 @@ input, button {
     font-size: 22px;
     cursor: pointer;
 }
+
+#detailImage {
+    width: 280px;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
