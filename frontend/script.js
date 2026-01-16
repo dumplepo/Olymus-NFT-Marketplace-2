@@ -61,6 +61,7 @@ window.onload = () => {
         await connectWallet();
         landingPage.style.display = "none";
         mainPage.style.display = "block";
+        requestAnimationFrame(() => mainPage.classList.add("active"));
     };
     function scrollToSection(id) {
         const el = document.getElementById(id);
@@ -192,16 +193,40 @@ async function createNFTCard(nft,section){
 }
 
 /* Display */
-async function displayMyNFTs(){
-    const container=document.getElementById("myNFTs"); container.innerHTML="";
-    const nfts=await contract.getMyNFTs(userAddress); const visible=nfts.filter(n=>!n.forSale);
-    if(!visible.length){container.innerHTML="<p>No NFTs</p>"; return;}
-    for(const nft of visible){container.appendChild(await createNFTCard(nft,"myNFTs"));}
+async function displayMyNFTs() {
+    const container = document.getElementById("myNFTs");
+    showSkeletons(container);
+
+    const nfts = await contract.getMyNFTs(userAddress);
+    const visible = nfts.filter(n => !n.forSale);
+
+    container.innerHTML = "";
+    if (!visible.length) {
+        showEmpty(container, "You don’t own any NFTs yet");
+        return;
+    }
+
+    for (const nft of visible) {
+        container.appendChild(await createNFTCard(nft, "myNFTs"));
+    }
 }
-async function displayCollections(){
-    const container=document.getElementById("collections"); container.innerHTML="";
-    const nfts=await contract.getCollections();
-    for(const nft of nfts){if(nft.forSale){container.appendChild(await createNFTCard(nft,"collections"));}}
+
+async function displayCollections() {
+    const container = document.getElementById("collections");
+    showSkeletons(container);
+
+    const nfts = await contract.getCollections();
+    const listed = nfts.filter(n => n.forSale);
+
+    container.innerHTML = "";
+    if (!listed.length) {
+        showEmpty(container, "No NFTs for sale right now");
+        return;
+    }
+
+    for (const nft of listed) {
+        container.appendChild(await createNFTCard(nft, "collections"));
+    }
 }
 async function loadMetadata(tokenId){try{const uri=await contract.tokenURI(tokenId); const res=await fetch(uri); return await res.json();}catch{return null;}}
 
@@ -257,4 +282,20 @@ const fadeObserver = new IntersectionObserver(
 document.querySelectorAll(".fade-section").forEach(el => {
     fadeObserver.observe(el);
 });
+function showSkeletons(container, count = 4) {
+    container.innerHTML = "";
+    for (let i = 0; i < count; i++) {
+        const sk = document.createElement("div");
+        sk.className = "skeleton";
+        container.appendChild(sk);
+    }
+}
 
+function showEmpty(container, text) {
+    container.innerHTML = `
+        <div class="empty-state">
+            🖼️ <br><br>
+            ${text}
+        </div>
+    `;
+}
