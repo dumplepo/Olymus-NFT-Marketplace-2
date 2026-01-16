@@ -49,6 +49,12 @@ const actionPrice = document.getElementById("actionPrice");
 const actionInput = document.getElementById("actionInput");
 const actionConfirmBtn = document.getElementById("actionConfirmBtn");
 
+function setActiveTab(activeBtn) {
+    Object.values(topButtons).forEach(btn => btn.classList.remove("active"));
+    activeBtn.classList.add("active");
+}
+
+
 /* Init */
 window.onload = () => {
     connectWalletLandingBtn.onclick = async () => {
@@ -62,9 +68,21 @@ window.onload = () => {
         const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
         window.scrollTo({ top: y, behavior: "smooth" });
     }
+    topButtons.myNFTs.onclick = () => {
+        setActiveTab(topButtons.myNFTs);
+        scrollToSection("myNFTs");
+    };
 
-    topButtons.myNFTs.onclick = () => scrollToSection("myNFTs");
-    topButtons.collections.onclick = () => scrollToSection("collections");
+    topButtons.collections.onclick = () => {
+        setActiveTab(topButtons.collections);
+        scrollToSection("collections");
+    };
+
+    topButtons.mint.onclick = () => {
+        setActiveTab(topButtons.mint);
+        openMintModal();
+    };
+
     topButtons.mint.onclick = openMintModal;
     if(openMintBtn) openMintBtn.onclick = openMintModal;
     if(closeDetailBtn) closeDetailBtn.onclick = closeDetailModal;
@@ -202,7 +220,41 @@ function openDetailModal(nft,meta){
 if(window.ethereum){
     window.ethereum.on("accountsChanged",async(accounts)=>{
         if(accounts.length===0){userAddress=null; topBarWallet.innerText="Not Connected"; document.getElementById("myNFTs").innerHTML=""; document.getElementById("collections").innerHTML="";}
-        else{userAddress=accounts[0]; signer=await provider.getSigner(); contract=new ethers.Contract(CONTRACT_ADDRESS,CONTRACT_ABI,signer); topBarWallet.innerText=`Connected: ${userAddress}`; await displayMyNFTs(); await displayCollections();}
+        else{userAddress=accounts[0]; signer=await provider.getSigner(); contract=new ethers.Contract(CONTRACT_ADDRESS,CONTRACT_ABI,signer); topBarWallet.innerText=`Connected: ${userAddress}`; 
+        await displayMyNFTs(); 
+        await displayCollections();
+        setActiveTab(topButtons.collections);
+    }
     });
     window.ethereum.on("chainChanged",()=>window.location.reload());
 }
+
+window.addEventListener("scroll", () => {
+    const myNFTs = document.getElementById("myNFTs").getBoundingClientRect().top;
+    const collections = document.getElementById("collections").getBoundingClientRect().top;
+
+    if (myNFTs <= 120 && collections > 120) {
+        setActiveTab(topButtons.myNFTs);
+    } else if (collections <= 120) {
+        setActiveTab(topButtons.collections);
+    }
+});
+
+/* =============================
+   FADE-IN OBSERVER
+============================= */
+const fadeObserver = new IntersectionObserver(
+    entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+            }
+        });
+    },
+    { threshold: 0.15 }
+);
+
+document.querySelectorAll(".fade-section").forEach(el => {
+    fadeObserver.observe(el);
+});
+

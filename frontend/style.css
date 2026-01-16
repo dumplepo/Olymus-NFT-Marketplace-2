@@ -118,3 +118,42 @@ button {
 #myNFTs {
     scroll-margin-top: 90px;
 }
+
+/* =============================
+   TOP BAR ACTIVE TAB
+============================= */
+#topBar button {
+    background: transparent;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+#topBar button:hover {
+    background: #f0f0f0;
+}
+
+#topBar button.active {
+    background: #222;
+    color: #fff;
+    border-color: #222;
+}
+
+/* =============================
+   SECTION FADE-IN ANIMATION
+============================= */
+.fade-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.fade-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+#mainPage {
+    padding-top: 70px;
+}
