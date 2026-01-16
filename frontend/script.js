@@ -205,7 +205,7 @@ async function sendNFT(tokenId) {
 /* =============================
    CARD
 ============================= */
-async function createNFTCard(nft, isOwnerView = false) {
+async function createNFTCard(nft, section) {
     const card = document.createElement("div");
     card.className = "nft-card";
 
@@ -215,61 +215,42 @@ async function createNFTCard(nft, isOwnerView = false) {
     // CARD CLICK → DETAIL MODAL
     card.onclick = () => openDetailModal(nft, meta);
 
-    card.innerHTML = `
-        <img src="${meta?.image || ''}">
-        <h3>${meta?.name || 'Unnamed NFT'}</h3>
-        <p>${meta?.description || ''}</p>
-        <p>Status: ${
-            nft.forSale
-                ? `For Sale (${ethers.formatEther(nft.price)} ETH)`
-                : "Not for sale"
-        }</p>
-    `;
+    // Stop propagation for buttons so modal doesn't open
+    function stop(e) { e.stopPropagation(); }
 
-    // BUTTONS MUST NOT TRIGGER MODAL
-    function stop(e) {
-        e.stopPropagation();
-    }
+    // DIFFERENT LAYOUTS
+    if (section === "myNFTs") {
+        // My NFTs: image, name, ID, price + buttons
+        card.innerHTML = `
+            <img src="${meta?.image || ''}">
+            <h3>${meta?.name || 'Unnamed NFT'}</h3>
+            <p><strong>Token ID:</strong> ${nft.tokenId}</p>
+            <p><strong>Price:</strong> ${
+                nft.forSale ? `${ethers.formatEther(nft.price)} ETH` : "Not for sale"
+            }</p>
+        `;
 
-    if (isOwnerView) {
-        if (!nft.forSale) {
-            addBtn(card, "Sell", (e) => {
-                stop(e);
-                sellNFT(nft.tokenId);
-            });
-        } else {
-            addBtn(card, "Cancel", (e) => {
-                stop(e);
-                cancelSale(nft.tokenId);
-            });
-        }
+        if (!nft.forSale) addBtn(card, "Sell", (e) => { stop(e); sellNFT(nft.tokenId); });
+        else addBtn(card, "Cancel", (e) => { stop(e); cancelSale(nft.tokenId); });
+        addBtn(card, "Send", (e) => { stop(e); sendNFT(nft.tokenId); });
 
-        addBtn(card, "Send", (e) => {
-            stop(e);
-            sendNFT(nft.tokenId);
-        });
-    } else if (nft.forSale) {
-        if (isOwner) {
-            addBtn(card, "Cancel", (e) => {
-                stop(e);
-                cancelSale(nft.tokenId);
-            });
-        } else {
-            addBtn(card, "Buy", (e) => {
-                stop(e);
-                buyNFT(nft.tokenId, nft.price);
-            });
-        }
+    } else if (section === "collections") {
+        // Collections: image, name, ID, owner, price + button
+        card.innerHTML = `
+            <img src="${meta?.image || ''}">
+            <h3>${meta?.name || 'Unnamed NFT'}</h3>
+            <p><strong>Token ID:</strong> ${nft.tokenId}</p>
+            <p><strong>Owner:</strong> ${nft.owner}</p>
+            <p><strong>Price:</strong> ${
+                nft.forSale ? `${ethers.formatEther(nft.price)} ETH` : "Not for sale"
+            }</p>
+        `;
+
+        if (isOwner && nft.forSale) addBtn(card, "Cancel", (e) => { stop(e); cancelSale(nft.tokenId); });
+        else if (!isOwner && nft.forSale) addBtn(card, "Buy", (e) => { stop(e); buyNFT(nft.tokenId, nft.price); });
     }
 
     return card;
-}
-
-function addBtn(card, text, fn) {
-    const btn = document.createElement("button");
-    btn.innerText = text;
-    btn.onclick = fn;
-    card.appendChild(btn);
 }
 
 /* =============================
@@ -288,7 +269,7 @@ async function displayMyNFTs() {
     }
 
     for (const nft of visible) {
-        container.appendChild(await createNFTCard(nft, true));
+        container.appendChild(await createNFTCard(nft, "myNFTs"));
     }
 }
 
@@ -298,7 +279,9 @@ async function displayCollections() {
 
     const nfts = await contract.getCollections();
     for (const nft of nfts) {
-        container.appendChild(await createNFTCard(nft, false));
+        if (nft.forSale) {
+            container.appendChild(await createNFTCard(nft, "collections"));
+        }
     }
 }
 
@@ -310,6 +293,13 @@ async function loadMetadata(tokenId) {
     } catch {
         return null;
     }
+}
+
+function addBtn(card, text, fn) {
+    const btn = document.createElement("button");
+    btn.innerText = text;
+    btn.onclick = fn;
+    card.appendChild(btn);
 }
 
 function openDetailModal(nft, meta) {
