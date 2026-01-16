@@ -1,0 +1,21 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+}
+
+h1, h2 {
+    color: #333;
+}
+
+input, button {
+    margin: 5px;
+    padding: 8px;
+}
+
+pre {
+    background-color: #f0f0f0;
+    padding: 10px;
+    overflow-x: auto;
+}
