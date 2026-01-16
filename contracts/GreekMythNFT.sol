@@ -102,4 +102,11 @@ contract GreekMythNFT is ERC721URIStorage, Ownable {
         }
         return result;
     }
+
+    function cancelSale(uint256 tokenId) external {
+        require(ownerOf(tokenId) == msg.sender, "Not the owner");
+        marketItems[tokenId].forSale = false;
+        marketItems[tokenId].price = 0;
+    }
+
 }
