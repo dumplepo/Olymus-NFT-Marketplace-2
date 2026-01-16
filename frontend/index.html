@@ -7,22 +7,52 @@
 </head>
 <body>
 
-<!-- ========== LANDING PAGE ========== -->
-<div id="landingPage">
+<!-- =============================
+     LANDING PAGE
+============================= -->
+<div id="landingPage" style="text-align:center; padding:50px;">
     <h1>Welcome to Greek Myth NFT Marketplace</h1>
-    <p>Explore, mint, and trade Greek Myth NFTs!</p>
+    <p>Explore, mint, buy, sell, and send Greek Myth NFTs!</p>
     <button id="connectWalletLanding">Connect Wallet</button>
 </div>
 
-<!-- ========== MAIN PAGE (HIDDEN INITIALLY) ========== -->
-<div id="mainPage" style="display:none">
-
-    <!-- Top Fixed Bar -->
-    <div id="topBar">
+<!-- =============================
+     MAIN PAGE
+============================= -->
+<div id="mainPage" style="display:none;">
+    <!-- Top Bar -->
+    <div id="topBar" >
         <button id="btnMyNFTs">My NFTs</button>
         <button id="btnCollections">Collections</button>
         <button id="btnMint">Mint</button>
-        <span id="topBarWallet">Not Connected</span>
+        <span id="topBarWallet" style="margin-left:auto;">Not Connected</span>
+    </div>
+
+    <!-- Mint Modal -->
+    <div id="mintModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Mint NFT</h2>
+            <input type="file" id="nftImage" accept="image/*">
+            <input type="text" id="nftName" placeholder="NFT Name">
+            <textarea id="nftDescription" placeholder="Description"></textarea>
+            <img id="imagePreview" style="display:none;width:200px">
+            <button id="confirmMint">Mint</button>
+            <button onclick="closeMintModal()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Sell / Buy / Send Modal -->
+    <div id="actionModal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="actionTitle"></h2>
+            <img id="actionImage" style="width:200px; margin:10px 0;">
+            <p id="actionPrice" style="font-weight:bold;"></p>
+            <input type="text" id="actionInput" placeholder="">
+            <div style="margin-top:10px;">
+                <button id="actionConfirmBtn"></button>
+                <button onclick="closeActionModal()">Cancel</button>
+            </div>
+        </div>
     </div>
 
     <!-- NFT Sections -->
@@ -32,50 +62,29 @@
     <h2>My NFTs</h2>
     <div id="myNFTs" class="nft-container"></div>
 
-</div>
-
-<!-- =============================
-     MINT MODAL
-============================= -->
-<div id="mintModal" class="modal hidden">
-    <div class="modal-content">
-        <h2>Mint NFT</h2>
-
-        <input type="file" id="nftImage" accept="image/*">
-        <input type="text" id="nftName" placeholder="NFT Name">
-        <textarea id="nftDescription" placeholder="Description"></textarea>
-
-        <img id="imagePreview" style="display:none;width:200px">
-
-        <button id="confirmMint">Mint</button>
-        <button onclick="closeMintModal()">Cancel</button>
-    </div>
-</div>
-
-<!-- =============================
-     NFT DETAIL MODAL
-============================= -->
-<div id="detailModal" class="modal">
-    <div class="modal-content detail-content">
-        <div class="detail-left">
-            <img id="detailImage">
-        </div>
-        <div class="detail-right">
-            <h2 id="detailName"></h2>
-            <p id="detailDescription"></p>
-
-            <p><strong>Token ID:</strong> <span id="detailTokenId"></span></p>
-            <p><strong>Price:</strong> <span id="detailPrice"></span></p>
-            <p><strong>Creator:</strong> <span id="detailCreator"></span></p>
-            <p><strong>Owner:</strong> <span id="detailOwner"></span></p>
-            <p><strong>Created:</strong> <span id="detailDate"></span></p>
-
-            <button id="closeDetailBtn">Close</button>
+    <!-- Detail Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content detail-content">
+            <div class="detail-left">
+                <img id="detailImage">
+            </div>
+            <div class="detail-right">
+                <h2 id="detailName"></h2>
+                <p id="detailDescription"></p>
+                <p><strong>Token ID:</strong> <span id="detailTokenId"></span></p>
+                <p><strong>Price:</strong> <span id="detailPrice"></span></p>
+                <p><strong>Creator:</strong> <span id="detailCreator"></span></p>
+                <p><strong>Owner:</strong> <span id="detailOwner"></span></p>
+                <p><strong>Created:</strong> <span id="detailDate"></span></p>
+                <button id="closeDetailBtn">Close</button>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.0/dist/ethers.umd.min.js"></script>
 <script src="script.js"></script>
+
 </body>
 </html>

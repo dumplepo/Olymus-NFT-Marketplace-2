@@ -105,3 +105,16 @@ button {
 #topBarWallet { margin-left:auto; font-weight:bold; }
 
 #landingPage { text-align:center; padding:100px 20px; }
+
+/* =============================
+   FIX FIXED TOP BAR OVERLAP
+============================= */
+#mainPage {
+    padding-top: 80px; /* must be >= topBar height */
+}
+
+/* Optional: spacing for section titles */
+#collections,
+#myNFTs {
+    scroll-margin-top: 90px;
+}
