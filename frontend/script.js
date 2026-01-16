@@ -2,6 +2,22 @@ let provider;
 let signer;
 let contract;
 
+const mintURIInput = document.getElementById("mintURI");
+const mintPreview = document.getElementById("mintPreview");
+
+// Show preview when user types/pastes URI
+mintURIInput.addEventListener("input", () => {
+    const uri = mintURIInput.value.trim();
+    if (uri) {
+        mintPreview.src = uri;
+        mintPreview.style.display = "block";
+    } else {
+        mintPreview.style.display = "none";
+    }
+});
+
+
+
 const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // replace with your deployed contract
 const CONTRACT_ABI = [
     "function mintNFT(string memory tokenURI) external",
@@ -43,13 +59,27 @@ async function connectWallet() {
 
 // Mint NFT
 async function mintNFT() {
-    const uri = document.getElementById("mintURI").value;
-    if (!uri) return alert("Enter Token URI!");
-    const tx = await contract.mintNFT(uri);
-    await tx.wait();
-    alert("NFT minted!");
-    await displayMyNFTs();
-    await displayCollections();
+    const uri = mintURIInput.value.trim();
+    if (!uri) return alert("Please enter a Token URI (image URL)");
+
+    try {
+        // Mint NFT
+        const tx = await contract.mintNFT(uri);
+        await tx.wait();
+
+        alert("NFT minted successfully!");
+
+        // Clear input and hide preview
+        mintURIInput.value = "";
+        mintPreview.style.display = "none";
+
+        // Refresh NFTs and collections
+        await displayMyNFTs();
+        await displayCollections();
+    } catch (err) {
+        console.error(err);
+        alert("Failed to mint NFT. Check console for details.");
+    }
 }
 
 // Buy NFT
