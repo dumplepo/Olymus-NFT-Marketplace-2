@@ -4,42 +4,28 @@
     <meta charset="UTF-8">
     <title>Greek Myth NFT Marketplace</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.0/dist/ethers.min.js"></script>
 </head>
 <body>
     <h1>Greek Myth NFT Marketplace</h1>
-
     <button id="connectWallet">Connect Wallet</button>
     <p id="walletAddress"></p>
 
     <hr>
-
     <h2>Mint NFT</h2>
-    <input type="text" id="mintURI" placeholder="Token URI">
+    <input type="text" id="mintURI" placeholder="Token URI (image URL)">
     <button id="mintNFT">Mint</button>
 
-    <h2>Sell NFT</h2>
-    <input type="number" id="sellTokenId" placeholder="Token ID">
-    <input type="text" id="sellPrice" placeholder="Price (ETH)">
-    <button id="sellNFT">Sell</button>
-
-    <h2>Buy NFT</h2>
-    <input type="number" id="buyTokenId" placeholder="Token ID">
-    <button id="buyNFT">Buy</button>
-
-    <h2>Send NFT</h2>
-    <input type="number" id="sendTokenId" placeholder="Token ID">
-    <input type="text" id="sendTo" placeholder="Recipient Address">
-    <button id="sendNFT">Send</button>
-
+    <hr>
     <h2>My NFTs</h2>
-    <button id="getMyNFTs">Show My NFTs</button>
-    <pre id="myNFTs"></pre>
+    <div id="myNFTs" class="nft-container"></div>
 
-    <h2>Collections</h2>
-    <button id="getCollections">Show Collections</button>
-    <pre id="collections"></pre>
+    <h2>Collections (For Sale)</h2>
+    <div id="collections" class="nft-container"></div>
 
+    <!-- Ethers v6 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.0/dist/ethers.umd.min.js"></script>
+    
+    <!-- Frontend logic -->
     <script src="script.js"></script>
 </body>
 </html>
