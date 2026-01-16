@@ -6,29 +6,54 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Greek Myth NFT Marketplace</h1>
-    <button id="connectWallet">Connect Wallet</button>
-    <p id="walletAddress"></p>
 
-    <hr>
-    <h2>Mint NFT</h2>
-    <input type="text" id="mintURI" placeholder="Token URI (image URL)">
-    <button id="mintNFT">Mint</button>
-    <br>
-    <img id="mintPreview" src="" alt="NFT Preview" style="width:200px; margin-top:10px; display:none;">
+<h1>Greek Myth NFT Marketplace</h1>
 
-    <hr>
-    <h2>Collections (For Sale)</h2>
-    <div id="collections" class="nft-container"></div>
+<button id="connectWallet">Connect Wallet</button>
+<p id="walletAddress"></p>
 
-    <hr>
-    <h2>My NFTs</h2>
-    <div id="myNFTs" class="nft-container"></div>
+<hr>
 
-    <!-- Ethers v6 CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.0/dist/ethers.umd.min.js"></script>
-    
-    <!-- Frontend logic -->
-    <script src="script.js"></script>
+<!-- =============================
+     MINT SECTION
+============================= -->
+<h2>Mint NFT</h2>
+<button id="mintNFT">Mint NFT</button>
+
+<!-- =============================
+     MINT MODAL
+============================= -->
+<div id="mintModal" class="modal">
+    <div class="modal-content">
+        <span id="closeMintModal" class="close">&times;</span>
+
+        <h2>Mint New NFT</h2>
+
+        <input type="file" id="mintImage" accept="image/*">
+        <img id="mintPreview" style="display:none; width:200px; margin-top:10px;">
+
+        <input type="text" id="mintName" placeholder="NFT Name">
+        <textarea id="mintDescription" placeholder="NFT Description"></textarea>
+
+        <button id="confirmMint">Confirm Mint</button>
+    </div>
+</div>
+
+<hr>
+
+<h2>Collections (For Sale)</h2>
+<div id="collections" class="nft-container"></div>
+
+<hr>
+
+<h2>My NFTs</h2>
+<div id="myNFTs" class="nft-container"></div>
+
+<!-- =============================
+     SCRIPTS
+============================= -->
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.8.0/dist/ethers.umd.min.js"></script>
+<script src="script.js"></script>
+
 </body>
 </html>

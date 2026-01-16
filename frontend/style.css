@@ -57,3 +57,42 @@ input, button {
     font-size: 0.9rem;
     cursor: pointer;
 }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+    background: #fff;
+    margin: 10% auto;
+    padding: 20px;
+    width: 350px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.modal-content input,
+.modal-content textarea {
+    width: 100%;
+    margin: 8px 0;
+    padding: 8px;
+}
+
+.modal-content img {
+    width: 200px;
+    margin-top: 10px;
+    border-radius: 8px;
+}
+
+.close {
+    float: right;
+    font-size: 22px;
+    cursor: pointer;
+}
