@@ -299,3 +299,29 @@ function showEmpty(container, text) {
         </div>
     `;
 }
+
+/* =============================
+   MOBILE NAVIGATION
+============================= */
+const mobileNav = document.getElementById("mobileNav");
+const mobileMintBtn = document.getElementById("mobileMint");
+
+if (mobileNav) {
+    mobileNav.querySelectorAll("button[data-target]").forEach(btn => {
+        btn.onclick = () => {
+            const target = btn.dataset.target;
+            const el = document.getElementById(target);
+            if (!el) return;
+
+            const yOffset = -20;
+            const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: "smooth" });
+        };
+    });
+}
+
+if (mobileMintBtn) {
+    mobileMintBtn.onclick = () => {
+        openMintModal();
+    };
+}
