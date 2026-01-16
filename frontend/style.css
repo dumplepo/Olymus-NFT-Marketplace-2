@@ -98,9 +98,54 @@ input, button {
 }
 
 #detailImage {
-    width: 280px;
-    height: 280px;
+    width: 350px;
+    /* height: 280px; */
     object-fit: cover;
     border-radius: 12px;
     margin-bottom: 10px;
+}
+
+/* Detail Modal Layout */
+.detail-content {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    max-width: 700px;
+    width: 90%;
+    padding: 20px;
+}
+
+.detail-left img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.detail-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.detail-right h2 {
+    margin-top: 0;
+}
+
+.detail-right p {
+    margin: 6px 0;
+    word-break: break-word;
+}
+
+/* Close button at bottom center */
+#closeDetailBtn {
+    margin-top: auto;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    align-self: center;
+    border-radius: 8px;
+    background-color: #222;
+    color: #fff;
 }

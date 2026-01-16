@@ -319,6 +319,10 @@ function openDetailModal(nft, meta) {
     detailModal.style.display = "block";
 }
 
+// Close Detail Modal
+const closeDetailBtn = document.getElementById("closeDetailBtn");
+closeDetailBtn.onclick = closeDetailModal;
+
 function closeDetailModal() {
     detailModal.style.display = "none";
 }

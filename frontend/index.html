@@ -53,18 +53,22 @@
      NFT DETAIL MODAL
 ============================= -->
 <div id="detailModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeDetailModal()">×</span>
+    <div class="modal-content detail-content">
+        <div class="detail-left">
+            <img id="detailImage">
+        </div>
+        <div class="detail-right">
+            <h2 id="detailName"></h2>
+            <p id="detailDescription"></p>
 
-        <img id="detailImage">
-        <h2 id="detailName"></h2>
-        <p id="detailDescription"></p>
+            <p><strong>Token ID:</strong> <span id="detailTokenId"></span></p>
+            <p><strong>Price:</strong> <span id="detailPrice"></span></p>
+            <p><strong>Creator:</strong> <span id="detailCreator"></span></p>
+            <p><strong>Owner:</strong> <span id="detailOwner"></span></p>
+            <p><strong>Created:</strong> <span id="detailDate"></span></p>
 
-        <p><strong>Token ID:</strong> <span id="detailTokenId"></span></p>
-        <p><strong>Price:</strong> <span id="detailPrice"></span></p>
-        <p><strong>Creator:</strong> <span id="detailCreator"></span></p>
-        <p><strong>Owner:</strong> <span id="detailOwner"></span></p>
-        <p><strong>Created:</strong> <span id="detailDate"></span></p>
+            <button id="closeDetailBtn">Close</button>
+        </div>
     </div>
 </div>
 
