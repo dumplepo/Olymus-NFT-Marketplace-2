@@ -1,15 +1,22 @@
+const hre = require("hardhat");
+
 async function main() {
-    const [deployer] = await ethers.getSigners();
-    console.log("Deploying contracts with account:", deployer.address);
+  const [deployer] = await hre.ethers.getSigners();
+  console.log("Deploying contracts with account:", deployer.address);
 
-    const GreekMythNFT = await ethers.getContractFactory("GreekMythNFT");
-    const nft = await GreekMythNFT.deploy();
-    await nft.deployed();
+  // Get contract factory
+  const GreekMythNFT = await hre.ethers.getContractFactory("GreekMythNFT");
 
-    console.log("GreekMythNFT deployed to:", nft.address);
+  // Deploy contract (ethers v6 style)
+  const nft = await GreekMythNFT.deploy();
+
+  // Wait for deployment to be mined
+  await nft.waitForDeployment(); // ethers v6 replacement for .deployed()
+
+  console.log("GreekMythNFT deployed to:", nft.target); // ethers v6 uses .target
 }
 
 main().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
+  console.error(error);
+  process.exitCode = 1;
 });
