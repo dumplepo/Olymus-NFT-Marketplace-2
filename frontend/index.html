@@ -7,18 +7,32 @@
 </head>
 <body>
 
-<h1>Greek Myth NFT Marketplace</h1>
+<!-- ========== LANDING PAGE ========== -->
+<div id="landingPage">
+    <h1>Welcome to Greek Myth NFT Marketplace</h1>
+    <p>Explore, mint, and trade Greek Myth NFTs!</p>
+    <button id="connectWalletLanding">Connect Wallet</button>
+</div>
 
-<button id="connectWallet">Connect Wallet</button>
-<p id="walletAddress"></p>
+<!-- ========== MAIN PAGE (HIDDEN INITIALLY) ========== -->
+<div id="mainPage" style="display:none">
 
-<hr>
+    <!-- Top Fixed Bar -->
+    <div id="topBar">
+        <button id="btnMyNFTs">My NFTs</button>
+        <button id="btnCollections">Collections</button>
+        <button id="btnMint">Mint</button>
+        <span id="topBarWallet">Not Connected</span>
+    </div>
 
-<!-- =============================
-     MINT SECTION
-============================= -->
-<h2>Mint NFT</h2>
-<button id="mintNFT">Mint NFT</button>
+    <!-- NFT Sections -->
+    <h2>Collections (For Sale)</h2>
+    <div id="collections" class="nft-container"></div>
+
+    <h2>My NFTs</h2>
+    <div id="myNFTs" class="nft-container"></div>
+
+</div>
 
 <!-- =============================
      MINT MODAL
@@ -37,17 +51,6 @@
         <button onclick="closeMintModal()">Cancel</button>
     </div>
 </div>
-
-<hr>
-
-<h2>Collections (For Sale)</h2>
-<div id="collections" class="nft-container"></div>
-
-<hr>
-
-<h2>My NFTs</h2>
-<div id="myNFTs" class="nft-container"></div>
-
 
 <!-- =============================
      NFT DETAIL MODAL
@@ -72,13 +75,7 @@
     </div>
 </div>
 
-
-
-<!-- =============================
-     SCRIPTS
-============================= -->
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.0/dist/ethers.umd.min.js"></script>
 <script src="script.js"></script>
-
 </body>
 </html>

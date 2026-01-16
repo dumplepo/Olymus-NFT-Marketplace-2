@@ -10,9 +10,10 @@ h1, h2 {
     color: #222;
 }
 
-input, button {
+button {
+    padding: 8px 12px;
     margin: 5px;
-    padding: 8px;
+    cursor: pointer;
 }
 
 .nft-container {
@@ -45,27 +46,12 @@ input, button {
     object-fit: cover;
 }
 
-.nft-card p {
-    font-size: 0.9rem;
-    margin: 5px 0;
-    word-break: break-word;
-}
-
-.nft-card button {
-    margin-top: 5px;
-    padding: 5px 8px;
-    font-size: 0.9rem;
-    cursor: pointer;
-}
-
 .modal {
     display: none;
     position: fixed;
     z-index: 999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
     background: rgba(0,0,0,0.6);
 }
 
@@ -78,34 +64,6 @@ input, button {
     text-align: center;
 }
 
-.modal-content input,
-.modal-content textarea {
-    width: 100%;
-    margin: 8px 0;
-    padding: 8px;
-}
-
-.modal-content img {
-    width: 200px;
-    margin-top: 10px;
-    border-radius: 8px;
-}
-
-.close {
-    float: right;
-    font-size: 22px;
-    cursor: pointer;
-}
-
-#detailImage {
-    width: 350px;
-    /* height: 280px; */
-    object-fit: cover;
-    border-radius: 12px;
-    margin-bottom: 10px;
-}
-
-/* Detail Modal Layout */
 .detail-content {
     display: flex;
     flex-direction: row;
@@ -129,23 +87,21 @@ input, button {
     justify-content: flex-start;
 }
 
-.detail-right h2 {
-    margin-top: 0;
+#topBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 1000;
 }
 
-.detail-right p {
-    margin: 6px 0;
-    word-break: break-word;
-}
+#topBar button { margin:0; }
+#topBarWallet { margin-left:auto; font-weight:bold; }
 
-/* Close button at bottom center */
-#closeDetailBtn {
-    margin-top: auto;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    align-self: center;
-    border-radius: 8px;
-    background-color: #222;
-    color: #fff;
-}
+#landingPage { text-align:center; padding:100px 20px; }
