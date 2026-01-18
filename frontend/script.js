@@ -1,243 +1,173 @@
-let provider;
-let signer;
-let contract;
-
-const mintURIInput = document.getElementById("mintURI");
-const mintPreview = document.getElementById("mintPreview");
-
-// Show preview when user types/pastes URI
-mintURIInput.addEventListener("input", () => {
-    const uri = mintURIInput.value.trim();
-    if (uri) {
-        mintPreview.src = uri;
-        mintPreview.style.display = "block";
-    } else {
-        mintPreview.style.display = "none";
-    }
-});
-
-
-
-const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // replace with your deployed contract
+let provider, signer, contract, userAddress;
+const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const CONTRACT_ABI = [
     "function mintNFT(string tokenURI) external",
     "function sellNFT(uint256 tokenId, uint256 price) external",
     "function buyNFT(uint256 tokenId) external payable",
     "function sendNFT(uint256 tokenId, address to) external",
-    "function getMyNFTs(address user) external view returns (tuple(uint256 tokenId,address creator,address owner,uint256 price,bool forSale,uint256 createdAt)[])",
-    "function getCollections() external view returns (tuple(uint256 tokenId,address creator,address owner,uint256 price,bool forSale,uint256 createdAt)[])",
+    "function cancelSale(uint256 tokenId) external",
     "function ownerOf(uint256 tokenId) view returns (address)",
-    "function cancelSale(uint256 tokenId) external"
+    "function tokenURI(uint256 tokenId) view returns (string)",
+    "function getMyNFTs(address user) external view returns (tuple(uint256 tokenId,address creator,address owner,uint256 price,bool forSale,uint256 createdAt)[])",
+    "function getCollections() external view returns (tuple(uint256 tokenId,address creator,address owner,uint256 price,bool forSale,uint256 createdAt)[])"
 ];
+const PINATA_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmMDczMGExNy03NTQyLTQ3ZDUtOTcyNi1lOTVkOWI5ZjBkZTAiLCJlbWFpbCI6ImR1bXBsZS5wb0BnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiZTRiNDdmN2E0NTk2NWVmYzJkZWYiLCJzY29wZWRLZXlTZWNyZXQiOiJlOGRhZjgyYTkwYmZhMzlkNzUxYWQyZTg4YmY3ZTFhOGQxMjU2MDg4M2FmOTgzYTNmYzkxYWJmZGQyZTUwNWU1IiwiZXhwIjoxNzk5OTIxMzgxfQ.2UScG7_nIMQih8Hs5klcXsoTKHX99RvpUJd8ya4uj2k";
 
-let userAddress;
+/* Elements */
+const landingPage = document.getElementById("landingPage");
+const mainPage = document.getElementById("mainPage");
+const connectWalletLandingBtn = document.getElementById("connectWalletLanding");
+const topButtons = {
+    myNFTs: document.getElementById("btnMyNFTs"),
+    collections: document.getElementById("btnCollections"),
+    mint: document.getElementById("btnMint")
+};
+const topBarWallet = document.getElementById("topBarWallet");
+const mintModal = document.getElementById("mintModal");
+const openMintBtn = document.getElementById("mintNFT") || topButtons.mint;
+const confirmMintBtn = document.getElementById("confirmMint");
+const imageInput = document.getElementById("nftImage");
+const nameInput = document.getElementById("nftName");
+const descInput = document.getElementById("nftDescription");
+const preview = document.getElementById("imagePreview");
 
+const detailModal = document.getElementById("detailModal");
+const detailImage = document.getElementById("detailImage");
+const detailName = document.getElementById("detailName");
+const detailDescription = document.getElementById("detailDescription");
+const detailTokenId = document.getElementById("detailTokenId");
+const detailPrice = document.getElementById("detailPrice");
+const detailCreator = document.getElementById("detailCreator");
+const detailOwner = document.getElementById("detailOwner");
+const detailDate = document.getElementById("detailDate");
+const closeDetailBtn = document.getElementById("closeDetailBtn");
+
+const actionModal = document.getElementById("actionModal");
+const actionTitle = document.getElementById("actionTitle");
+const actionImage = document.getElementById("actionImage");
+const actionPrice = document.getElementById("actionPrice");
+const actionInput = document.getElementById("actionInput");
+const actionConfirmBtn = document.getElementById("actionConfirmBtn");
+
+function setActiveTab(activeBtn) {
+    Object.values(topButtons).forEach(btn => btn.classList.remove("active"));
+    activeBtn.classList.add("active");
+}
+
+
+/* Init */
 window.onload = () => {
-    document.getElementById("connectWallet").onclick = connectWallet;
-    document.getElementById("mintNFT").onclick = mintNFT;
+    connectWalletLandingBtn.onclick = async () => {
+        await connectWallet();
+        landingPage.style.display = "none";
+        mainPage.style.display = "block";
+        requestAnimationFrame(() => mainPage.classList.add("active"));
+    };
+    function scrollToSection(id) {
+        const el = document.getElementById(id);
+        const yOffset = -120; // height of top bar
+        const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: "smooth" });
+    }
+    topButtons.myNFTs.onclick = () => {
+        setActiveTab(topButtons.myNFTs);
+        scrollToSection("myNFTs");
+    };
+
+    topButtons.collections.onclick = () => {
+        setActiveTab(topButtons.collections);
+        scrollToSection("collections");
+    };
+
+    topButtons.mint.onclick = () => {
+        setActiveTab(topButtons.mint);
+        openMintModal();
+    };
+
+    topButtons.mint.onclick = openMintModal;
+    if(openMintBtn) openMintBtn.onclick = openMintModal;
+    if(closeDetailBtn) closeDetailBtn.onclick = closeDetailModal;
 };
 
-// Connect wallet
+/* Wallet */
 async function connectWallet() {
-    if (typeof ethers === "undefined") {
-        alert("Ethers.js not loaded! Check your CDN.");
-        return;
-    }
-
-    if (window.ethereum) {
-        provider = new ethers.BrowserProvider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-        signer = await provider.getSigner();
-        userAddress = await signer.getAddress();
-        document.getElementById("walletAddress").innerText = `Connected: ${userAddress}`;
-        contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-        await displayMyNFTs();
-        await displayCollections();
-    } else {
-        alert("Please install MetaMask!");
-    }
-}
-
-// Mint NFT
-async function mintNFT() {
-    const uri = mintURIInput.value.trim();
-    if (!uri) return alert("Please enter a Token URI (image URL)");
-
-    try {
-        // Mint NFT
-        const tx = await contract.mintNFT(uri);
-        await tx.wait();
-
-        alert("NFT minted successfully!");
-
-        // Clear input and hide preview
-        mintURIInput.value = "";
-        mintPreview.style.display = "none";
-
-        // Refresh NFTs and collections
-        await displayMyNFTs();
-        await displayCollections();
-    } catch (err) {
-        console.error(err);
-        alert("Failed to mint NFT. Check console for details.");
-    }
-}
-
-// Buy NFT
-async function buyNFT(tokenId, price) {
-    try {
-        const tx = await contract.buyNFT(tokenId, { value: price });
-        await tx.wait();
-
-        alert(`NFT #${tokenId} purchased successfully!`);
-
-        // Refresh both sections
-        await displayCollections();
-        await displayMyNFTs();
-    } catch (err) {
-        console.error(err);
-        alert("Failed to buy NFT. Check console for details.");
-    }
-}
-
-// Send NFT
-async function sendNFT(tokenId) {
-    try {
-        // Ask for recipient address
-        const to = prompt("Enter recipient wallet address:");
-        if (!to) return; // exit if cancelled
-
-        // Call smart contract
-        const tx = await contract.sendNFT(tokenId, to);
-        await tx.wait();
-
-        alert(`NFT #${tokenId} sent to ${to} successfully!`);
-
-        // Refresh UI
-        await displayMyNFTs();
-        await displayCollections();
-    } catch (err) {
-        console.error(err);
-        alert("Failed to send NFT. Check console for details.");
-    }
-}
-
-// Sell NFT
-async function sellNFT(tokenId) {
-    const price = prompt("Enter price in ETH:");
-    if (!price) return;
-    const tx = await contract.sellNFT(tokenId, ethers.parseEther(price));
-    await tx.wait();
-    alert("NFT listed for sale!");
+    if(!window.ethereum) return alert("Install MetaMask");
+    provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts",[]);
+    signer = await provider.getSigner();
+    userAddress = await signer.getAddress();
+    contract = new ethers.Contract(CONTRACT_ADDRESS,CONTRACT_ABI,signer);
+    topBarWallet.innerText = `Connected: ${userAddress}`;
     await displayMyNFTs();
     await displayCollections();
 }
 
-// Render NFT card with enhanced Sell logic and For Sale badge
-function createNFTCard(nft, isOwnerView = false) {
-    const card = document.createElement("div");
-    card.className = "nft-card";
+/* Modals */
+function openMintModal(){ mintModal.style.display="block"; }
+function closeMintModal(){ mintModal.style.display="none"; }
+function openActionModal(){ actionModal.style.display="block"; }
+function closeActionModal(){ actionModal.style.display="none"; }
+function closeDetailModal(){ detailModal.style.display="none"; }
 
-    const isOwner = nft.owner.toLowerCase() === userAddress.toLowerCase();
+imageInput.onchange = ()=>{
+    const file=imageInput.files[0]; if(!file) return;
+    preview.src=URL.createObjectURL(file); preview.style.display="block";
+};
 
-    card.innerHTML = `
-        <img src="${nft.tokenURI || ''}" alt="NFT Image">
-        <p><strong>Token ID:</strong> ${nft.tokenId}</p>
-        <p><strong>Creator:</strong> ${nft.creator}</p>
-        <p><strong>Owner:</strong> ${nft.owner}</p>
-        <p>
-            <strong>Status:</strong>
-            ${nft.forSale ? `For Sale (${ethers.formatEther(nft.price)} ETH)` : "Not for sale"}
-        </p>
-    `;
-
-    // -------------------------
-    // MY NFTs SECTION
-    // -------------------------
-    if (isOwnerView) {
-        if (!nft.forSale) {
-            const sellBtn = document.createElement("button");
-            sellBtn.innerText = "Sell";
-            sellBtn.onclick = () => sellNFT(nft.tokenId);
-            card.appendChild(sellBtn);
-        } else {
-            const cancelBtn = document.createElement("button");
-            cancelBtn.innerText = "Cancel";
-            cancelBtn.onclick = () => cancelSale(nft.tokenId);
-            card.appendChild(cancelBtn);
-        }
-
-        const sendBtn = document.createElement("button");
-        sendBtn.innerText = "Send";
-        sendBtn.onclick = () => sendNFT(nft.tokenId);
-        card.appendChild(sendBtn);
-    }
-
-    // -------------------------
-    // COLLECTION SECTION
-    // -------------------------
-    else if (nft.forSale) {
-        if (isOwner) {
-            const cancelBtn = document.createElement("button");
-            cancelBtn.innerText = "Cancel";
-            cancelBtn.onclick = () => cancelSale(nft.tokenId);
-            card.appendChild(cancelBtn);
-        } else {
-            const buyBtn = document.createElement("button");
-            buyBtn.innerText = "Buy";
-            buyBtn.onclick = () => buyNFT(nft.tokenId, nft.price);
-            card.appendChild(buyBtn);
-        }
-    }
-
-    return card;
-}
-
-// Display user's NFTs
-async function displayMyNFTs() {
-    const container = document.getElementById("myNFTs");
-    container.innerHTML = "";
-
-    const nfts = await contract.getMyNFTs(userAddress);
-
-    // 🔴 FILTER OUT NFTs THAT ARE FOR SALE
-    const ownedNotForSale = nfts.filter(
-        nft => nft.forSale === false
-    );
-
-    if (ownedNotForSale.length === 0) {
-        container.innerHTML = "<p>No NFTs (listed NFTs are in Collections)</p>";
-        return;
-    }
-
-    ownedNotForSale.forEach(nft => {
-        container.appendChild(createNFTCard(nft, true));
+/* IPFS */
+async function uploadToIPFS(fileOrBlob){
+    const fd=new FormData(); fd.append("file",fileOrBlob);
+    const res=await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS",{
+        method:"POST",
+        headers:{Authorization:`Bearer ${PINATA_JWT}`},
+        body:fd
     });
+    const data=await res.json();
+    return `https://gateway.pinata.cloud/ipfs/${data.IpfsHash}`;
 }
 
-// Display collection
-async function displayCollections() {
-    const container = document.getElementById("collections");
-    container.innerHTML = "";
+/* Mint */
+confirmMintBtn.onclick=async()=>{
+    try{
+        const file=imageInput.files[0]; const name=nameInput.value.trim(); const desc=descInput.value.trim();
+        if(!file||!name||!desc) return alert("Fill all fields");
+        const imageURL=await uploadToIPFS(file);
+        const metadata={name,description:desc,image:imageURL};
+        const tokenURI=await uploadToIPFS(new Blob([JSON.stringify(metadata)],{type:"application/json"}));
+        await (await contract.mintNFT(tokenURI)).wait();
+        alert("NFT Minted!");
+        closeMintModal(); imageInput.value=""; nameInput.value=""; descInput.value=""; preview.style.display="none";
+        await displayMyNFTs(); await displayCollections();
+    }catch(e){console.error(e); alert("Mint failed");}
+};
 
-    const nfts = await contract.getCollections();
-    nfts.forEach(nft => {
-        container.appendChild(createNFTCard(nft, false));
-    });
+/* Market Actions */
+async function sellNFT(tokenId, image){
+    actionTitle.innerText="Sell NFT"; actionImage.src=image; actionPrice.innerText="";
+    actionInput.placeholder="Enter price in ETH"; actionInput.value="";
+    actionConfirmBtn.innerText="Sell";
+    openActionModal();
+    actionConfirmBtn.onclick=async()=>{
+        const price=actionInput.value; if(!price) return alert("Enter price");
+        await (await contract.sellNFT(tokenId,ethers.parseEther(price))).wait();
+        closeActionModal(); await displayMyNFTs(); await displayCollections();
+    };
 }
+async function buyNFT(tokenId, price, image){
+    actionTitle.innerText="Buy NFT"; actionImage.src=image; actionPrice.innerText=`Price: ${ethers.formatEther(price)} ETH`;
+    actionInput.style.display="none"; actionConfirmBtn.innerText="Buy"; openActionModal();
+    actionConfirmBtn.onclick=async()=>{ await (await contract.buyNFT(tokenId,{value:price})).wait(); closeActionModal(); await displayMyNFTs(); await displayCollections();};
+}
+async function sendNFT(tokenId, image){
+    actionTitle.innerText="Send NFT"; actionImage.src=image; actionPrice.innerText="";
+    actionInput.placeholder="Recipient address"; actionInput.value=""; actionInput.style.display="block"; actionConfirmBtn.innerText="Send"; openActionModal();
+    actionConfirmBtn.onclick=async()=>{
+        const to=actionInput.value; if(!to) return alert("Enter address");
+        await (await contract.sendNFT(tokenId,to)).wait(); closeActionModal(); await displayMyNFTs(); await displayCollections();
+    };
+}
+async function cancelSale(tokenId){ await (await contract.cancelSale(tokenId)).wait(); await displayMyNFTs(); await displayCollections(); }
 
-
-async function cancelSale(tokenId) {
-    try {
-        const tx = await contract.cancelSale(tokenId);
-        await tx.wait();
-
-        alert("Sale canceled!");
-
-        await displayMyNFTs();
-        await displayCollections();
-    } catch (err) {
-        console.error(err);
-        alert("Failed to cancel sale");
-    }
+/* =============================
+   NFT CARD UPGRADES
 }
