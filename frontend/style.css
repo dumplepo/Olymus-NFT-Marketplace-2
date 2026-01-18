@@ -1,6 +1,3 @@
-/* =============================
-   GLOBAL THEME
-============================= */
 body.mythic-theme {
     margin: 0;
     font-family: "Cinzel", "Georgia", serif;
@@ -19,7 +16,6 @@ h1, h2 {
 
 /* =============================
    LANDING PAGE
-============================= */
 #landingPage {
     min-height: 100vh;
     display: flex;
@@ -44,7 +40,6 @@ h1, h2 {
 
 /* =============================
    TOP BAR
-============================= */
 #topBar {
     position: fixed;
     top: 0;
@@ -72,7 +67,6 @@ h1, h2 {
 
 /* =============================
    MYTHIC BUTTONS
-============================= */
 button {
     font-family: inherit;
     padding: 8px 18px;
@@ -103,7 +97,6 @@ button.active {
 
 /* =============================
    MAIN PAGE FIX
-============================= */
 #mainPage {
     padding-top: 90px;
     max-width: 1200px;
@@ -112,7 +105,6 @@ button.active {
 
 /* =============================
    NFT GRID
-============================= */
 .nft-container {
     display: flex;
     flex-wrap: wrap;
@@ -123,7 +115,6 @@ button.active {
 
 /* =============================
    NFT CARD (MYTHIC FRAME)
-============================= */
 .nft-card {
     width: 220px;
     padding: 12px;
@@ -166,7 +157,6 @@ button.active {
 
 /* =============================
    CARD GLOW (EPIC)
-============================= */
 .nft-card::after {
     content: "";
     position: absolute;
@@ -183,7 +173,6 @@ button.active {
 
 /* =============================
    MODALS
-============================= */
 .modal {
     display: none;
     position: fixed;
@@ -206,7 +195,6 @@ button.active {
 
 /* =============================
    DETAIL MODAL
-============================= */
 .detail-content {
     display: flex;
     gap: 20px;
@@ -230,7 +218,6 @@ button.active {
 
 /* =============================
    INPUTS
-============================= */
 input, textarea {
     width: 100%;
     padding: 8px;
@@ -243,7 +230,6 @@ input, textarea {
 
 /* =============================
    SKELETON
-============================= */
 .skeleton {
     width: 220px;
     height: 280px;
@@ -265,7 +251,6 @@ input, textarea {
 
 /* =============================
    EMPTY STATE
-============================= */
 .empty-state {
     text-align: center;
     opacity: 0.8;
@@ -275,7 +260,6 @@ input, textarea {
 
 /* =============================
    MOBILE UI
-============================= */
 @media (max-width: 768px) {
 
     /* Hide stone columns */
@@ -352,7 +336,6 @@ input, textarea {
 
 /* =============================
    STONE COLUMNS
-============================= */
 .stone-column {
     position: fixed;
     top: 0;
@@ -367,7 +350,6 @@ input, textarea {
 
 /* =============================
    MYTHIC GRID & NFT RARITY
-============================= */
 .mythic-grid .nft-card {
     border-width: 3px;
     border-image-slice: 1;
@@ -382,7 +364,6 @@ input, textarea {
 
 /* =============================
    ACTIVE TAB GOLD SHINE
-============================= */
 button.active {
     background: linear-gradient(90deg, #ffd700, #e6c200, #ffd700);
     animation: gold-shine 2s infinite linear;
@@ -396,7 +377,6 @@ button.active {
 
 /* =============================
    ETH PRICE BADGE
-============================= */
 .nft-card .price-badge {
     position: absolute;
     top: 8px;
@@ -419,7 +399,6 @@ button.active {
 
 /* =============================
    MYTHICAL BACKGROUND FLOATERS
-============================= */
 @keyframes floatY {
     0% { transform: translateY(0px) }
     50% { transform: translateY(-20px) }
@@ -438,7 +417,64 @@ button.active {
 
 /* =============================
    MOBILE STONE COLUMNS
-============================= */
 @media (max-width: 768px) {
     .stone-column { display: none; }
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+    background-color: #f5f5f5;
+}
+
+h1, h2 {
+    color: #222;
+}
+
+input, button {
+    margin: 5px;
+    padding: 8px;
+}
+
+.nft-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.nft-card {
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    width: 200px;
+    padding: 10px;
+    text-align: center;
+    background-color: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.nft-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.nft-card img {
+    width: 180px;
+    height: 180px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.nft-card p {
+    font-size: 0.9rem;
+    margin: 5px 0;
+    word-break: break-word;
+}
+
+.nft-card button {
+    margin-top: 5px;
+    padding: 5px 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
 }

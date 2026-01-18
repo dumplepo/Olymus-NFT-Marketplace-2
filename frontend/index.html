@@ -5,11 +5,6 @@
     <title>Greek Myth NFT Marketplace</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="mythic-theme">
-    
-<!-- =============================
-     LANDING PAGE
-============================= -->
 <div id="landingPage" style="text-align:center; padding:50px;">
     <h1>Welcome to Greek Myth NFT Marketplace</h1>
     <!-- <p>Explore, mint, buy, sell, and send Greek Myth NFTs!</p> -->
@@ -18,7 +13,6 @@
 
 <!-- =============================
      MAIN PAGE
-============================= -->
 <div id="mainPage" style="display:none;">
     <!-- Top Bar -->
 
@@ -92,7 +86,6 @@
 
 <!-- =============================
      MOBILE BOTTOM NAV
-============================= -->
 <div id="mobileNav">
     <button data-target="myNFTs">My NFTs</button>
     <button data-target="collections">Collections</button>
@@ -105,5 +98,30 @@
 <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.0/dist/ethers.umd.min.js"></script>
 <script src="script.js"></script>
 
+<body>
+    <h1>Greek Myth NFT Marketplace</h1>
+    <button id="connectWallet">Connect Wallet</button>
+    <p id="walletAddress"></p>
+
+    <hr>
+    <h2>Mint NFT</h2>
+    <input type="text" id="mintURI" placeholder="Token URI (image URL)">
+    <button id="mintNFT">Mint</button>
+    <br>
+    <img id="mintPreview" src="" alt="NFT Preview" style="width:200px; margin-top:10px; display:none;">
+
+    <hr>
+    <h2>Collections (For Sale)</h2>
+    <div id="collections" class="nft-container"></div>
+
+    <hr>
+    <h2>My NFTs</h2>
+    <div id="myNFTs" class="nft-container"></div>
+
+    <!-- Ethers v6 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.8.0/dist/ethers.umd.min.js"></script>
+    
+    <!-- Frontend logic -->
+    <script src="script.js"></script>
 </body>
 </html>
