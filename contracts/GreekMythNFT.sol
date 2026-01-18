@@ -19,10 +19,9 @@ contract GreekMythNFT is ERC721URIStorage, Ownable {
     mapping(uint256 => MarketItem) public marketItems;
 
     constructor() ERC721("Greek Myth NFT", "GMNFT") Ownable(msg.sender) {
-        tokenCounter = 1; // start token IDs at 1
+        tokenCounter = 1;
     }
 
-    // Mint function
     function mintNFT(string memory tokenURI) external {
         uint256 newTokenId = tokenCounter;
         _safeMint(msg.sender, newTokenId);
@@ -40,14 +39,12 @@ contract GreekMythNFT is ERC721URIStorage, Ownable {
         tokenCounter++;
     }
 
-    // Put NFT for sale
     function sellNFT(uint256 tokenId, uint256 price) external {
         require(ownerOf(tokenId) == msg.sender, "Not the owner");
         marketItems[tokenId].forSale = true;
         marketItems[tokenId].price = price;
     }
 
-    // Buy NFT
     function buyNFT(uint256 tokenId) external payable {
         MarketItem storage item = marketItems[tokenId];
         require(item.forSale, "Not for sale");
@@ -55,26 +52,21 @@ contract GreekMythNFT is ERC721URIStorage, Ownable {
 
         address seller = item.owner;
 
-        // Transfer NFT
         _transfer(seller, msg.sender, tokenId);
 
-        // Transfer ETH
         (bool sent, ) = payable(seller).call{value: msg.value}("");
         require(sent, "Failed to send Ether");
 
-        // Update market item
         item.owner = msg.sender;
         item.forSale = false;
     }
 
-    // Send NFT for free
     function sendNFT(uint256 tokenId, address to) external {
         require(ownerOf(tokenId) == msg.sender, "Not the owner");
         _transfer(msg.sender, to, tokenId);
         marketItems[tokenId].owner = to;
     }
 
-    // Get user's NFTs
     function getMyNFTs(address user) external view returns (MarketItem[] memory) {
         uint256 total = tokenCounter - 1;
         uint256 count = 0;
@@ -93,7 +85,6 @@ contract GreekMythNFT is ERC721URIStorage, Ownable {
         return result;
     }
 
-    // Get NFTs for sale
     function getCollections() external view returns (MarketItem[] memory) {
         uint256 total = tokenCounter - 1;
         uint256 count = 0;
@@ -111,4 +102,11 @@ contract GreekMythNFT is ERC721URIStorage, Ownable {
         }
         return result;
     }
+
+    function cancelSale(uint256 tokenId) external {
+        require(ownerOf(tokenId) == msg.sender, "Not the owner");
+        marketItems[tokenId].forSale = false;
+        marketItems[tokenId].price = 0;
+    }
+
 }
